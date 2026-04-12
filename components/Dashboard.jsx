@@ -997,5 +997,4 @@ function EmptyState({ icon, label }) {
       <p className="text-xs text-gray-400">{label}</p>
     </div>
   );
-} (unchanged from user, assumed integrated)
-// Use your existing file here.
+}
