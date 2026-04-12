@@ -1,21 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
   serverExternalPackages: ['@tensorflow/tfjs'],
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        crypto: false,
-        fs: false,
-        path: false,
-      };
-    }
+  webpack: (config) => {
     config.plugins.push(
       new (require('webpack').IgnorePlugin)({
         resourceRegExp: /^@tensorflow\/tfjs/,
       })
     );
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      crypto: false,
+      fs: false,
+      path: false,
+    };
     return config;
   },
 };
