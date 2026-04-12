@@ -8,7 +8,6 @@
     "start": "next start"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^4.20.0",
     "axios": "^1.6.8",
     "clsx": "^2.1.0",
     "date-fns": "^3.6.0",

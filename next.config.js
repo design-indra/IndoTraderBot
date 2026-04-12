@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['@tensorflow/tfjs', '@tensorflow/tfjs-node'],
+  serverExternalPackages: ['@tensorflow/tfjs'],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -9,13 +9,14 @@ const nextConfig = {
         fs: false,
         path: false,
       };
-      // Ignore tensorflow on client side — only used server-side
-      config.plugins.push(
-        new (require('webpack').IgnorePlugin)({
-          resourceRegExp: /^@tensorflow/,
-        })
-      );
     }
+    // Ignore tensorflow on both client and server during webpack build
+    // It is loaded at runtime via dynamic import only
+    config.plugins.push(
+      new (require('webpack').IgnorePlugin)({
+        resourceRegExp: /^@tensorflow\/tfjs/,
+      })
+    );
     return config;
   },
 };
