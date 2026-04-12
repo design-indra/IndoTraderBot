@@ -564,48 +564,72 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
               )}
             </div>
 
-            {/* ── Max Profit Mode (dipindah dari Settings) ── */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="text-sm font-bold text-gray-700">🚀 Max Profit Mode</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Dynamic ATR SL/TP + Auto Compound setelah win streak</p>
-                </div>
-                <button
-                  onClick={async () => {
-                    // Optimistic update — langsung flip UI dulu
-                    const prev = riskSettings?.maxProfitMode ?? false;
-                    setRiskSettings(r => r ? { ...r, maxProfitMode: !prev } : { maxProfitMode: !prev });
-                    try {
-                      const res = await fetch('/api/settings', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'toggleMaxProfitMode' }),
-                      });
-                      const d = await res.json();
-                      if (d.success && d.risk) {
-                        setRiskSettings(d.risk);
-                      } else {
-                        // Rollback kalau gagal
-                        setRiskSettings(r => r ? { ...r, maxProfitMode: prev } : { maxProfitMode: prev });
-                      }
-                    } catch {
-                      // Rollback kalau network error
-                      setRiskSettings(r => r ? { ...r, maxProfitMode: prev } : { maxProfitMode: prev });
-                    }
-                  }}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${riskSettings?.maxProfitMode ? 'bg-emerald-500' : 'bg-gray-200'}`}>
-                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${riskSettings?.maxProfitMode ? 'translate-x-6' : 'translate-x-0.5'}`}/>
-                </button>
-              </div>
-              {riskSettings?.maxProfitMode && (
-                <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-700 space-y-1">
-                  <p>✅ <strong>ATR Dinamis</strong> — SL/TP menyesuaikan volatilitas realtime</p>
-                  <p>✅ <strong>Auto Compound</strong> — size bertambah otomatis saat win streak 3+</p>
-                  <p>✅ <strong>Buy Low Sell High</strong> — entry hanya di zona support/oversold</p>
-                </div>
-              )}
-            </div>
+            {/* ── Max Profit Mode (SUDAH DIPERBAIKI) ── */}
+<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+  <div className="flex items-center justify-between mb-3">
+    <div>
+      <p className="text-sm font-bold text-gray-700 flex items-center gap-2">
+        🚀 Max Profit Mode
+      </p>
+      <p className="text-xs text-gray-400 mt-0.5">
+        Dynamic ATR SL/TP + Auto Compound setelah win streak
+      </p>
+    </div>
+
+    <button
+      onClick={async () => {
+        const currentValue = riskSettings?.maxProfitMode ?? false;
+        const newValue = !currentValue;
+
+        // Optimistic UI (langsung ubah tampilan)
+        setRiskSettings((prev) => prev ? { ...prev, maxProfitMode: newValue } : { maxProfitMode: newValue });
+
+        try {
+          const res = await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'toggleMaxProfitMode' }),
+          });
+
+          const d = await res.json();
+
+          if (d.success && d.risk) {
+            // Update dengan data resmi dari server
+            setRiskSettings(d.risk);
+          } else {
+            // Rollback jika gagal
+            setRiskSettings((prev) => prev ? { ...prev, maxProfitMode: currentValue } : { maxProfitMode: currentValue });
+            alert('Gagal mengubah Max Profit Mode. Silakan coba lagi.');
+          }
+        } catch (err) {
+          console.error('Toggle Max Profit error:', err);
+          // Rollback jika error
+          setRiskSettings((prev) => prev ? { ...prev, maxProfitMode: currentValue } : { maxProfitMode: currentValue });
+          alert('Terjadi kesalahan koneksi. Perubahan dibatalkan.');
+        }
+      }}
+      disabled={riskSettings === null}
+      className={`relative w-12 h-6 rounded-full transition-all duration-200 ${
+        riskSettings?.maxProfitMode ? 'bg-emerald-500' : 'bg-gray-200'
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${
+          riskSettings?.maxProfitMode ? 'translate-x-6' : 'translate-x-0'
+        }`}
+      />
+    </button>
+  </div>
+
+  {/* Info box hanya muncul jika aktif */}
+  {riskSettings?.maxProfitMode && (
+    <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-700 space-y-1">
+      <p>✅ <strong>ATR Dinamis</strong> — SL/TP menyesuaikan volatilitas realtime</p>
+      <p>✅ <strong>Auto Compound</strong> — size bertambah otomatis saat win streak 3+</p>
+      <p>✅ <strong>Buy Low Sell High</strong> — entry hanya di zona support/oversold</p>
+    </div>
+  )}
+</div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
               <p className="text-sm font-bold text-gray-700 mb-3">📡 Last Signal <span className="text-gray-400 font-normal text-xs ml-1">L{config.level}</span></p>
