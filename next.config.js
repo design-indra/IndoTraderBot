@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@tensorflow/tfjs'],
-  },
+  serverExternalPackages: ['@tensorflow/tfjs'],
   webpack: (config) => {
     config.plugins.push(
       new (require('webpack').IgnorePlugin)({
