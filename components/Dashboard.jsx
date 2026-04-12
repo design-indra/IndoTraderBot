@@ -574,7 +574,7 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
                 <button
                   onClick={async () => {
                     const d = await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'toggleMaxProfitMode'})}).then(r=>r.json());
-                    if(d.success && onUpdateRisk) onUpdateRisk(d.risk);
+                    if(d.success) setRiskSettings(d.risk);
                   }}
                   className={`relative w-12 h-6 rounded-full transition-colors ${riskSettings?.maxProfitMode ? 'bg-emerald-500' : 'bg-gray-200'}`}>
                   <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${riskSettings?.maxProfitMode ? 'translate-x-6' : 'translate-x-0.5'}`}/>
