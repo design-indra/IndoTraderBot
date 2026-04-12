@@ -4,6 +4,8 @@ import { Zap } from 'lucide-react';
 import Dashboard   from '../components/Dashboard';
 import LoginScreen from '../components/LoginScreen';
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const [authState,     setAuthState]     = useState('loading');
   const [userEmail,     setUserEmail]     = useState('');
