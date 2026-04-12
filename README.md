@@ -1,4 +1,4 @@
-# ⚡ IndoTrader v3.0 — Auto Crypto Scalping Bot
+# ⚡ IndoTraderBot v3.0 — Auto Crypto Scalping Bot
 
 Bot trading crypto scalping untuk Indodax dengan **AI 5-Level** + **Auto Pair Scanner** + **Max Profit Mode**.
 
