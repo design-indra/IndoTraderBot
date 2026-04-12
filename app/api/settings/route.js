@@ -1,11 +1,10 @@
 /**
  * app/api/settings/route.js
- * GET  /api/settings
- * POST /api/settings
  */
+
 import { NextResponse } from 'next/server';
 import { getRiskSettings, updateRiskSettings } from '../../../lib/riskManager.js';
-import { resetDemo, setStartBalance }           from '../../../lib/demoStore.js';
+import { resetDemo, setStartBalance } from '../../../lib/demoStore.js';
 
 export async function GET() {
   const risk = getRiskSettings();
@@ -31,14 +30,20 @@ export async function POST(req) {
 
   if (action === 'toggleMaxProfitMode') {
     const current = getRiskSettings();
-    const updated  = updateRiskSettings({ maxProfitMode: !current.maxProfitMode });
-    return NextResponse.json({ success: true, maxProfitMode: updated.maxProfitMode, risk: updated });
+    const updated = updateRiskSettings({ maxProfitMode: !current.maxProfitMode });
+    return NextResponse.json({ success: true, risk: updated });
+  }
+
+  if (action === 'toggleUltraProfitMode') {
+    const current = getRiskSettings();
+    const updated = updateRiskSettings({ ultraProfitMode: !current.ultraProfitMode });
+    return NextResponse.json({ success: true, risk: updated });
   }
 
   if (action === 'toggleScanner') {
     const current = getRiskSettings();
-    const updated  = updateRiskSettings({ autoScannerEnabled: !current.autoScannerEnabled });
-    return NextResponse.json({ success: true, autoScannerEnabled: updated.autoScannerEnabled, risk: updated });
+    const updated = updateRiskSettings({ autoScannerEnabled: !current.autoScannerEnabled });
+    return NextResponse.json({ success: true, risk: updated });
   }
 
   if (action === 'resetDemoBalance') {
