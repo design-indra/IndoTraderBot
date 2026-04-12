@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ['@tensorflow/tfjs'],
+  serverExternalPackages: ['@tensorflow/tfjs', '@tensorflow/tfjs-node'],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -9,6 +9,12 @@ const nextConfig = {
         fs: false,
         path: false,
       };
+      // Ignore tensorflow on client side — only used server-side
+      config.plugins.push(
+        new (require('webpack').IgnorePlugin)({
+          resourceRegExp: /^@tensorflow/,
+        })
+      );
     }
     return config;
   },
