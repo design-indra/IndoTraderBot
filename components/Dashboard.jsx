@@ -573,8 +573,26 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
                 </div>
                 <button
                   onClick={async () => {
-                    const d = await fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'toggleMaxProfitMode'})}).then(r=>r.json());
-                    if(d.success) setRiskSettings(d.risk);
+                    // Optimistic update — langsung flip UI dulu
+                    const prev = riskSettings?.maxProfitMode ?? false;
+                    setRiskSettings(r => r ? { ...r, maxProfitMode: !prev } : { maxProfitMode: !prev });
+                    try {
+                      const res = await fetch('/api/settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'toggleMaxProfitMode' }),
+                      });
+                      const d = await res.json();
+                      if (d.success && d.risk) {
+                        setRiskSettings(d.risk);
+                      } else {
+                        // Rollback kalau gagal
+                        setRiskSettings(r => r ? { ...r, maxProfitMode: prev } : { maxProfitMode: prev });
+                      }
+                    } catch {
+                      // Rollback kalau network error
+                      setRiskSettings(r => r ? { ...r, maxProfitMode: prev } : { maxProfitMode: prev });
+                    }
                   }}
                   className={`relative w-12 h-6 rounded-full transition-colors ${riskSettings?.maxProfitMode ? 'bg-emerald-500' : 'bg-gray-200'}`}>
                   <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${riskSettings?.maxProfitMode ? 'translate-x-6' : 'translate-x-0.5'}`}/>
