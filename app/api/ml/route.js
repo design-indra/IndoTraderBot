@@ -4,6 +4,8 @@
  * GET  /api/ml - model stats
  */
 
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { trainModel, getTrainingDataStats } from '../../../lib/mlModel.js';
 import { getRLStats } from '../../../lib/rlEngine.js';
