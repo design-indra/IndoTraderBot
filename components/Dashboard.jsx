@@ -619,6 +619,63 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
                   />
                 </button>
               </div>
+              
+              {/* ── ULTRA PROFIT MODE ── */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex-1 pr-4">
+                  <p className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                    🔥 Ultra Profit Mode
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Maximal profit + compounding agresif dengan filter ketat
+                  </p>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    if (!riskSettings) return;
+                    const currentValue = !!riskSettings.ultraProfitMode;
+                    const newValue = !currentValue;
+
+                    setRiskSettings(prev => prev ? { ...prev, ultraProfitMode: newValue } : { ultraProfitMode: newValue });
+
+                    try {
+                      const res = await fetch('/api/settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'toggleUltraProfitMode' }),
+                      });
+                      const d = await res.json();
+                      if (d.success && d.risk) setRiskSettings(d.risk);
+                    } catch (err) {
+                      console.error(err);
+                      setRiskSettings(prev => prev ? { ...prev, ultraProfitMode: currentValue } : { ultraProfitMode: currentValue });
+                      alert('Terjadi kesalahan koneksi');
+                    }
+                  }}
+                  className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${
+                    riskSettings?.ultraProfitMode ? 'bg-red-500' : 'bg-gray-200'
+                  }`}
+                >
+                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${
+                    riskSettings?.ultraProfitMode ? 'translate-x-6' : 'translate-x-0.5'
+                  }`} />
+                </button>
+              </div>
+
+              {riskSettings?.ultraProfitMode && (
+                <div className="mt-4 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-2xl p-4 text-sm">
+                  <p className="font-bold mb-2">🔥 ULTRA PROFIT MODE AKTIF</p>
+                  <ul className="text-xs space-y-1">
+                    <li>✓ Entry hanya di zona High Probability</li>
+                    <li>✓ Compounding agresif saat win streak</li>
+                    <li>✓ Partial TP 50% + Trailing Stop</li>
+                    <li>✓ Drawdown protection ketat</li>
+                  </ul>
+                </div>
+              )}
+            </div>
 
               {riskSettings?.maxProfitMode && (
                 <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-700 space-y-1">
