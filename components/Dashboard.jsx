@@ -1,4 +1,4 @@
-// Full 'use client';
+'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   TrendingUp, TrendingDown, Activity, Zap, Shield, Brain, Play, Square,
@@ -510,6 +510,7 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
         )}
 
         {/* ═══ SIGNAL ═══ */}
+        {tab==='signal' && (
   <div className="p-3 space-y-3">
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
       <p className="text-sm font-bold text-gray-700 mb-3">🎯 Strategy Level</p>
@@ -673,6 +674,7 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
           </ul>
         </div>
       )}
+    </div>
 
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
       <p className="text-sm font-bold text-gray-700 mb-3">📡 Last Signal <span className="text-gray-400 font-normal text-xs ml-1">L{config.level}</span></p>
@@ -703,145 +705,6 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
     </div>
   </div>
 )}
-                <button
-                  onClick={async () => {
-                    if (!riskSettings) return;
-
-                    const currentValue = riskSettings.maxProfitMode ?? false;
-                    const newValue = !currentValue;
-
-                    // Optimistic update
-                    setRiskSettings(prev => prev ? { ...prev, maxProfitMode: newValue } : { maxProfitMode: newValue });
-
-                    try {
-                      const res = await fetch('/api/settings', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'toggleMaxProfitMode' }),
-                      });
-
-                      const d = await res.json();
-
-                      if (d.success && d.risk) {
-                        setRiskSettings(d.risk);
-                      } else {
-                        // Rollback
-                        setRiskSettings(prev => prev ? { ...prev, maxProfitMode: currentValue } : { maxProfitMode: currentValue });
-                        alert('Gagal mengubah Max Profit Mode');
-                      }
-                    } catch (err) {
-                      console.error('Toggle error:', err);
-                      // Rollback
-                      setRiskSettings(prev => prev ? { ...prev, maxProfitMode: currentValue } : { maxProfitMode: currentValue });
-                      alert('Terjadi kesalahan koneksi');
-                    }
-                  }}
-                  className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${
-                    riskSettings?.maxProfitMode ? 'bg-emerald-500' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${
-                      riskSettings?.maxProfitMode ? 'translate-x-6' : 'translate-x-0.5'
-                    }`}
-                  />
-                </button>
-              </div>
-              
-              {/* ── ULTRA PROFIT MODE ── */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 pr-4">
-                  <p className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                    🔥 Ultra Profit Mode
-                  </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    Maximal profit + compounding agresif dengan filter ketat
-                  </p>
-                </div>
-
-                <button
-                  onClick={async () => {
-                    if (!riskSettings) return;
-                    const currentValue = !!riskSettings.ultraProfitMode;
-                    const newValue = !currentValue;
-
-                    setRiskSettings(prev => prev ? { ...prev, ultraProfitMode: newValue } : { ultraProfitMode: newValue });
-
-                    try {
-                      const res = await fetch('/api/settings', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'toggleUltraProfitMode' }),
-                      });
-                      const d = await res.json();
-                      if (d.success && d.risk) setRiskSettings(d.risk);
-                    } catch (err) {
-                      console.error(err);
-                      setRiskSettings(prev => prev ? { ...prev, ultraProfitMode: currentValue } : { ultraProfitMode: currentValue });
-                      alert('Terjadi kesalahan koneksi');
-                    }
-                  }}
-                  className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${
-                    riskSettings?.ultraProfitMode ? 'bg-red-500' : 'bg-gray-200'
-                  }`}
-                >
-                  <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${
-                    riskSettings?.ultraProfitMode ? 'translate-x-6' : 'translate-x-0.5'
-                  }`} />
-                </button>
-              </div>
-
-              {riskSettings?.ultraProfitMode && (
-                <div className="mt-4 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-2xl p-4 text-sm">
-                  <p className="font-bold mb-2">🔥 ULTRA PROFIT MODE AKTIF</p>
-                  <ul className="text-xs space-y-1">
-                    <li>✓ Entry hanya di zona High Probability</li>
-                    <li>✓ Compounding agresif saat win streak</li>
-                    <li>✓ Partial TP 50% + Trailing Stop</li>
-                    <li>✓ Drawdown protection ketat</li>
-                  </ul>
-                </div>
-              )}
-              {riskSettings?.maxProfitMode && (
-                <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-700 space-y-1">
-                  <p>✅ <strong>ATR Dinamis</strong> — SL/TP menyesuaikan volatilitas realtime</p>
-                  <p>✅ <strong>Auto Compound</strong> — size bertambah otomatis saat win streak 3+</p>
-                  <p>✅ <strong>Buy Low Sell High</strong> — entry hanya di zona support/oversold</p>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-              <p className="text-sm font-bold text-gray-700 mb-3">📡 Last Signal <span className="text-gray-400 font-normal text-xs ml-1">L{config.level}</span></p>
-              <SignalPanel signal={bot.lastSignal} level={config.level}/>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                <span className="text-sm font-bold text-gray-700">📝 Trade Log</span>
-                <span className="text-xs text-gray-400">{logs.length} entries</span>
-              </div>
-              <div className="overflow-y-auto" style={{maxHeight:300}}>
-                {logs.length===0
-                  ? <div className="py-8 text-center text-xs text-gray-400">Log kosong — start bot</div>
-                  : logs.map((log)=>(
-                      <div key={log.id} className="px-4 py-2.5 flex items-start gap-2.5 border-b border-gray-50 last:border-0">
-                        <span className={`text-sm shrink-0 mt-0.5 ${log.type==='buy'||log.type==='profit'?'text-emerald-500':log.type==='loss'?'text-red-400':log.type==='warning'?'text-amber-500':'text-gray-400'}`}>
-                          {log.type==='buy'?'↑':log.type==='profit'?'✓':log.type==='loss'?'✗':log.type==='warning'?'⚠':'·'}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-700 break-words">{log.message}</p>
-                          <p className="mono text-xs text-gray-400 mt-0.5">{new Date(log.time).toLocaleTimeString('id-ID')}</p>
-                        </div>
-                      </div>
-                    ))
-                }
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* ═══ RISK ═══ */}
         {tab==='risk' && (
           <div className="p-3 space-y-3">
