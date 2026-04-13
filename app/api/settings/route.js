@@ -1,7 +1,5 @@
 /**
  * app/api/settings/route.js
- * GET  /api/settings
- * POST /api/settings
  */
 
 import { NextResponse } from 'next/server';
@@ -26,7 +24,6 @@ export async function POST(req) {
   const body = await req.json().catch(() => ({}));
   const { action, settings } = body;
 
-  // Update risk settings umum
   if (action === 'updateRisk') {
     const updated = updateRiskSettings(settings);
     return NextResponse.json({ success: true, risk: updated });
@@ -46,7 +43,7 @@ export async function POST(req) {
     return NextResponse.json({ success: true, risk: updated });
   }
 
-  // Toggle Ultra Light Mode (versi longgar)
+  // Toggle Ultra Light Mode (versi longgar - yang baru)
   if (action === 'toggleUltraLightMode') {
     const current = getRiskSettings();
     const updated = updateRiskSettings({ ultraLightMode: !current.ultraLightMode });
