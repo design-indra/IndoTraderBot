@@ -805,8 +805,6 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
                   </ul>
                 </div>
               )}
-            </div>
-
               {riskSettings?.maxProfitMode && (
                 <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-xs text-emerald-700 space-y-1">
                   <p>✅ <strong>ATR Dinamis</strong> — SL/TP menyesuaikan volatilitas realtime</p>
