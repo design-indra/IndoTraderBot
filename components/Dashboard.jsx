@@ -510,7 +510,6 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
         )}
 
         {/* ═══ SIGNAL ═══ */}
-        {tab==='signal' && (
   <div className="p-3 space-y-3">
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
       <p className="text-sm font-bold text-gray-700 mb-3">🎯 Strategy Level</p>
@@ -674,7 +673,6 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
           </ul>
         </div>
       )}
-    </div>
 
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
       <p className="text-sm font-bold text-gray-700 mb-3">📡 Last Signal <span className="text-gray-400 font-normal text-xs ml-1">L{config.level}</span></p>
