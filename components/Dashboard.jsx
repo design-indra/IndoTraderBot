@@ -705,6 +705,7 @@ export default function Dashboard({ userEmail='', onLogout=null, bestPair=null, 
     </div>
   </div>
 )}
+
         {/* ═══ RISK ═══ */}
         {tab==='risk' && (
           <div className="p-3 space-y-3">
